@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.c2f4f1f9.css","mappings":"AAAA,KACI,wBACF,CAEA,MACE,wBAAoC,CACpC,qBACF","sources":["App.css"],"sourcesContent":["body {\r\n    background-color: rgb(54, 185, 42);\r\n  }\r\n\r\n  #canv{\r\n    background-color: rgb(209, 195, 138);\r\n    border: 3px solid black;\r\n  }"],"names":[],"sourceRoot":""}
