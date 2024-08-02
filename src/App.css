@@ -1,0 +1,8 @@
+body {
+    background-color: rgb(54, 185, 42);
+  }
+
+  #canv{
+    background-color: rgb(209, 195, 138);
+    border: 3px solid black;
+  }
