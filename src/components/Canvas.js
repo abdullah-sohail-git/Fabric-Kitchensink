@@ -69,6 +69,7 @@ const Canvas = () => {
       top: 300,
       fontSize: 20,
       fill: "#000000",
+      backgroundColor: "#f0f0f0", // Add background color to text
     });
     canvasInstance.current.add(text);
   };
@@ -91,7 +92,7 @@ const Canvas = () => {
 
   const addPath = () => {
     const path = new fabric.Path("M 100 100 L 200 200 L 100 200 Z", {
-      fill: "blue",
+      fill: "#0000ff",
       stroke: "black",
       strokeWidth: 2,
       left: 200,
@@ -246,17 +247,19 @@ const Canvas = () => {
                 />
               </label>
             </div>
-            <div>
-              <label style={{ fontSize: 20 }}>
-                Background :
-                <input
-                  type="color"
-                  style={{ fontSize: 20, marginLeft: 5 }}
-                  value={selectedObject.background || "#ffffff"} // Default to white if no background color
-                  onChange={(e) => handleColorChange(e, "background")}
-                />
-              </label>
-            </div>
+            {selectedObject.type === "text" && (
+              <div>
+                <label style={{ fontSize: 20 }}>
+                  Background Color :
+                  <input
+                    type="color"
+                    style={{ fontSize: 20, marginLeft: 5 }}
+                    value={selectedObject.backgroundColor || "#ffffff"} // Default to white if no background color
+                    onChange={(e) => handleColorChange(e, "backgroundColor")}
+                  />
+                </label>
+              </div>
+            )}
             {selectedObject.type === "text" && (
               <div>
                 <label style={{ fontSize: 20 }}>
