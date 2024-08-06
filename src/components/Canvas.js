@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { fabric } from "fabric";
 
 const Canvas = () => {
@@ -42,7 +42,7 @@ const Canvas = () => {
     const rect = new fabric.Rect({
       left: 40,
       top: 50,
-      fill: "red",
+      fill: "#ff0000",
       width: 100,
       height: 100,
       stroke: "black",
@@ -56,7 +56,7 @@ const Canvas = () => {
       left: 100,
       top: 170,
       radius: 50,
-      fill: "green",
+      fill: "#00ff00",
       stroke: "black",
       strokeWidth: 1,
     });
@@ -68,7 +68,7 @@ const Canvas = () => {
       left: 80,
       top: 300,
       fontSize: 20,
-      fill: "black",
+      fill: "#000000",
     });
     canvasInstance.current.add(text);
   };
@@ -102,7 +102,6 @@ const Canvas = () => {
 
   const updateObject = (key, value) => {
     if (selectedObject) {
-      // Convert to number if key is 'left' or 'top'
       if (key === "left" || key === "top") {
         value = parseFloat(value) || 0;
       }
@@ -147,11 +146,7 @@ const Canvas = () => {
   return (
     <div style={{ display: "flex" }}>
       <div>
-        <canvas
-          id="canv"
-          ref={canvasRef}
-          style={{ border: "2px solid black", width: "500px", height: "500px" }}
-        />
+        <canvas id="canv" ref={canvasRef} />
         <button
           onClick={addRectangle}
           style={{ fontSize: 20, backgroundColor: "lightgrey", marginTop: 15 }}
@@ -226,7 +221,7 @@ const Canvas = () => {
         </button>
       </div>
       <div style={{ marginLeft: "20px" }}>
-        {selectedObject && (
+        {selectedObject && selectedObject.type !== "image" && (
           <div>
             <h1>Properties</h1>
             <div>
