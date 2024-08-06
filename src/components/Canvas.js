@@ -15,15 +15,17 @@ const Canvas = () => {
 
     canvasInstance.current.on("selection:created", (e) => {
       setSelectedObject(e.target);
-      if (e.target.type === "text") {
+      if (e.target.type === "i-text") {
         setTextContent(e.target.text);
+        e.target.enterEditing();
       }
     });
 
     canvasInstance.current.on("selection:updated", (e) => {
       setSelectedObject(e.target);
-      if (e.target.type === "text") {
+      if (e.target.type === "i-text") {
         setTextContent(e.target.text);
+        e.target.enterEditing();
       }
     });
 
@@ -64,7 +66,7 @@ const Canvas = () => {
   };
 
   const addText = () => {
-    const text = new fabric.Text("Editable Text", {
+    const text = new fabric.IText("Editable Text", {
       left: 80,
       top: 300,
       fontSize: 20,
@@ -115,7 +117,7 @@ const Canvas = () => {
 
   const handleTextChange = (e) => {
     setTextContent(e.target.value);
-    if (selectedObject && selectedObject.type === "text") {
+    if (selectedObject && selectedObject.type === "i-text") {
       selectedObject.set({ text: e.target.value });
       selectedObject.setCoords();
       canvasInstance.current.renderAll();
@@ -247,7 +249,7 @@ const Canvas = () => {
                 />
               </label>
             </div>
-            {selectedObject.type === "text" && (
+            {selectedObject.type === "i-text" && (
               <div>
                 <label style={{ fontSize: 20 }}>
                   Background Color :
@@ -260,7 +262,7 @@ const Canvas = () => {
                 </label>
               </div>
             )}
-            {selectedObject.type === "text" && (
+            {selectedObject.type === "i-text" && (
               <div>
                 <label style={{ fontSize: 20 }}>
                   Text :
