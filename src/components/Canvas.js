@@ -40,8 +40,12 @@ const Canvas = () => {
         console.log("width", e.target.getScaledHeight());
       }
     };
+    const textChanged = (e) => {
+      if (e.target) setTextContent(e.target.text);
+    };
 
     canvasInstance.current.on("selection:created", handleSelection);
+    canvasInstance.current.on("text:changed", textChanged);
     canvasInstance.current.on("selection:updated", handleSelection);
     canvasInstance.current.on("object:modified", handleModify);
     canvasInstance.current.on("selection:cleared", () => {
@@ -185,9 +189,11 @@ const Canvas = () => {
 
   const handleImageWidthChange = (e) => {
     const width = parseInt(e.target.value, 10);
+    const { width: objWidth } = selectedObject;
     setImageWidth(width);
+
     if (selectedObject && selectedObject.type === "image") {
-      selectedObject.set({ width });
+      selectedObject.set({ scaleX: e.target.value / objWidth });
       selectedObject.setCoords();
       canvasInstance.current.renderAll();
     }
@@ -195,9 +201,10 @@ const Canvas = () => {
 
   const handleImageHeightChange = (e) => {
     const height = parseInt(e.target.value, 10);
+    const { height: objHeight } = selectedObject;
     setImageHeight(height);
     if (selectedObject && selectedObject.type === "image") {
-      selectedObject.set({ height });
+      selectedObject.set({ scaleY: e.target.value / objHeight });
       selectedObject.setCoords();
       canvasInstance.current.renderAll();
     }
