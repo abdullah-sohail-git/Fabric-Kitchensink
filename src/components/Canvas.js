@@ -16,7 +16,7 @@ const Canvas = () => {
   useEffect(() => {
     canvasInstance.current = new fabric.Canvas(canvasRef.current);
     canvasInstance.current.setHeight(500);
-    canvasInstance.current.setWidth(500);
+    canvasInstance.current.setWidth(600);
 
     const handleSelection = (e) => {
       const target = e.target;
@@ -315,7 +315,7 @@ const Canvas = () => {
           Restore
         </button>
       </div>
-      <div style={{ marginLeft: "20px" }}>
+      <div style={{ marginLeft: "50px" }}>
         {selectedObject && selectedObject.type !== "image" && (
           <div>
             <h1>Properties</h1>
