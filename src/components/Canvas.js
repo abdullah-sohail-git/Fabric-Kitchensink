@@ -7,6 +7,9 @@ const Canvas = () => {
   const [selectedObject, setSelectedObject] = useState(null);
   const [textContent, setTextContent] = useState("");
   const [savedState, setSavedState] = useState(null);
+  const [fillColor, setFillColor] = useState("#000000");
+  const [strokeColor, setStrokeColor] = useState("#000000");
+  const [backgroundColor, setBackgroundColor] = useState("#ffffff");
 
   useEffect(() => {
     canvasInstance.current = new fabric.Canvas(canvasRef.current);
@@ -15,16 +18,22 @@ const Canvas = () => {
 
     canvasInstance.current.on("selection:created", (e) => {
       setSelectedObject(e.target);
+      setFillColor(e.target.fill || "#000000");
+      setStrokeColor(e.target.stroke || "#000000");
       if (e.target.type === "i-text") {
         setTextContent(e.target.text);
+        setBackgroundColor(e.target.backgroundColor || "#ffffff");
         e.target.enterEditing();
       }
     });
 
     canvasInstance.current.on("selection:updated", (e) => {
       setSelectedObject(e.target);
+      setFillColor(e.target.fill || "#000000");
+      setStrokeColor(e.target.stroke || "#000000");
       if (e.target.type === "i-text") {
         setTextContent(e.target.text);
+        setBackgroundColor(e.target.backgroundColor || "#ffffff");
         e.target.enterEditing();
       }
     });
@@ -32,6 +41,9 @@ const Canvas = () => {
     canvasInstance.current.on("selection:cleared", () => {
       setSelectedObject(null);
       setTextContent("");
+      setFillColor("#000000");
+      setStrokeColor("#000000");
+      setBackgroundColor("#ffffff");
     });
 
     // Clean up on component unmount
@@ -118,9 +130,6 @@ const Canvas = () => {
 
   const updateObject = (key, value) => {
     if (selectedObject) {
-      if (key === "left" || key === "top") {
-        value = parseFloat(value) || 0;
-      }
       selectedObject.set({ [key]: value });
       selectedObject.setCoords();
       canvasInstance.current.renderAll();
@@ -138,7 +147,15 @@ const Canvas = () => {
   };
 
   const handleColorChange = (e, key) => {
-    updateObject(key, e.target.value);
+    const color = e.target.value;
+    if (key === "fill") {
+      setFillColor(color);
+    } else if (key === "stroke") {
+      setStrokeColor(color);
+    } else if (key === "backgroundColor") {
+      setBackgroundColor(color);
+    }
+    updateObject(key, color);
   };
 
   const clearCanvas = () => {
@@ -146,6 +163,9 @@ const Canvas = () => {
     canvasInstance.current.clear();
     setSelectedObject(null);
     setTextContent("");
+    setFillColor("#000000");
+    setStrokeColor("#000000");
+    setBackgroundColor("#ffffff");
   };
 
   const restoreCanvas = () => {
@@ -156,6 +176,9 @@ const Canvas = () => {
       setSavedState(null);
       setSelectedObject(null);
       setTextContent("");
+      setFillColor("#000000");
+      setStrokeColor("#000000");
+      setBackgroundColor("#ffffff");
     }
   };
 
@@ -246,7 +269,7 @@ const Canvas = () => {
                 <input
                   type="color"
                   style={{ fontSize: 20, marginLeft: 5 }}
-                  value={selectedObject.fill || "#000000"} // Default to black if no fill color
+                  value={fillColor}
                   onChange={(e) => handleColorChange(e, "fill")}
                 />
               </label>
@@ -257,7 +280,7 @@ const Canvas = () => {
                 <input
                   type="color"
                   style={{ fontSize: 20, marginLeft: 5 }}
-                  value={selectedObject.stroke || "#000000"} // Default to black if no stroke color
+                  value={strokeColor}
                   onChange={(e) => handleColorChange(e, "stroke")}
                 />
               </label>
@@ -269,7 +292,7 @@ const Canvas = () => {
                   <input
                     type="color"
                     style={{ fontSize: 20, marginLeft: 5 }}
-                    value={selectedObject.backgroundColor || "#ffffff"} // Default to white if no background color
+                    value={backgroundColor}
                     onChange={(e) => handleColorChange(e, "backgroundColor")}
                   />
                 </label>
