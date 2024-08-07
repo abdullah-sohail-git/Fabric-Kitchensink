@@ -7,7 +7,6 @@ const Canvas = () => {
   const [selectedObject, setSelectedObject] = useState(null);
   const [textContent, setTextContent] = useState("");
   const [savedState, setSavedState] = useState(null);
-  const [objectCount, setObjectCount] = useState(0); // Single count for all objects
 
   useEffect(() => {
     canvasInstance.current = new fabric.Canvas(canvasRef.current);
@@ -41,17 +40,16 @@ const Canvas = () => {
     };
   }, []);
 
-  const getPosition = () => {
-    const spacing = 20; // Distance between shapes
-    const cols = 5; // Number of objects per row
-    const left = 40 + (objectCount % cols) * (100 + spacing); // Adjusted for horizontal spacing
-    const top = 50 + Math.floor(objectCount / cols) * (100 + spacing); // Adjusted for vertical spacing
-    setObjectCount(objectCount + 1); // Increment count
+  const getRandomPosition = (objectWidth, objectHeight) => {
+    const canvasWidth = canvasInstance.current.getWidth();
+    const canvasHeight = canvasInstance.current.getHeight();
+    const left = Math.random() * (canvasWidth - objectWidth);
+    const top = Math.random() * (canvasHeight - objectHeight);
     return { left, top };
   };
 
   const addRectangle = () => {
-    const { left, top } = getPosition();
+    const { left, top } = getRandomPosition(100, 100);
     const rect = new fabric.Rect({
       left,
       top,
@@ -65,7 +63,7 @@ const Canvas = () => {
   };
 
   const addCircle = () => {
-    const { left, top } = getPosition();
+    const { left, top } = getRandomPosition(100, 100);
     const circle = new fabric.Circle({
       left,
       top,
@@ -78,7 +76,7 @@ const Canvas = () => {
   };
 
   const addText = () => {
-    const { left, top } = getPosition();
+    const { left, top } = getRandomPosition(100, 20);
     const text = new fabric.IText("Editable Text", {
       left,
       top,
@@ -90,7 +88,7 @@ const Canvas = () => {
   };
 
   const addImage = () => {
-    const { left, top } = getPosition();
+    const { left, top } = getRandomPosition(150, 150);
     fabric.Image.fromURL(
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuxNRKW53yk-7EKjY7bJRb9rQx16XK_5PCPw&s",
       (img) => {
@@ -107,7 +105,7 @@ const Canvas = () => {
   };
 
   const addPath = () => {
-    const { left, top } = getPosition();
+    const { left, top } = getRandomPosition(100, 100);
     const path = new fabric.Path("M 100 100 L 200 200 L 100 200 Z", {
       fill: "#0000ff",
       stroke: "black",
@@ -148,7 +146,6 @@ const Canvas = () => {
     canvasInstance.current.clear();
     setSelectedObject(null);
     setTextContent("");
-    setObjectCount(0); // Reset object count
   };
 
   const restoreCanvas = () => {
