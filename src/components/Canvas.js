@@ -26,15 +26,24 @@ const Canvas = () => {
       if (target.type === "i-text") {
         setTextContent(target.text);
         setBackgroundColor(target.backgroundColor || "#ffffff");
-        target.enterEditing();
+        // target.enterEditing();
       } else if (target.type === "image") {
         setImageWidth(target.width || 150);
         setImageHeight(target.height || 150);
       }
     };
+    const handleModify = (e) => {
+      if (e.target) {
+        setImageWidth(e.target.getScaledWidth() || 150);
+        setImageHeight(e.target.getScaledHeight() || 150);
+        console.log("width", e.target.getScaledWidth());
+        console.log("width", e.target.getScaledHeight());
+      }
+    };
 
     canvasInstance.current.on("selection:created", handleSelection);
     canvasInstance.current.on("selection:updated", handleSelection);
+    canvasInstance.current.on("object:modified", handleModify);
     canvasInstance.current.on("selection:cleared", () => {
       setSelectedObject(null);
       setTextContent("");
@@ -45,7 +54,6 @@ const Canvas = () => {
       setImageHeight(150);
     });
 
-    // Clean up on component unmount
     return () => {
       canvasInstance.current.dispose();
     };
@@ -103,10 +111,10 @@ const Canvas = () => {
       selectable: true,
       hasControls: true,
       hasBorders: true,
-      lockScalingFlip: true, // Prevent flipping during scaling
+      lockScalingFlip: true,
     });
     canvasInstance.current.add(text);
-    canvasInstance.current.setActiveObject(text); // Ensure the new text is selected and active
+    canvasInstance.current.setActiveObject(text);
   };
 
   const addImage = () => {
@@ -125,7 +133,7 @@ const Canvas = () => {
           hasBorders: true,
         });
         canvasInstance.current.add(img);
-        canvasInstance.current.setActiveObject(img); // Ensure the new image is selected and active
+        canvasInstance.current.setActiveObject(img);
       }
     );
   };
@@ -196,7 +204,7 @@ const Canvas = () => {
   };
 
   const clearCanvas = () => {
-    setSavedState(canvasInstance.current.toJSON()); // Save the current state
+    setSavedState(canvasInstance.current.toJSON());
     canvasInstance.current.clear();
     setSelectedObject(null);
     setTextContent("");
