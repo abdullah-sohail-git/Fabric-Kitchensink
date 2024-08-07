@@ -10,40 +10,39 @@ const Canvas = () => {
   const [fillColor, setFillColor] = useState("#000000");
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [backgroundColor, setBackgroundColor] = useState("#ffffff");
+  const [imageWidth, setImageWidth] = useState(150);
+  const [imageHeight, setImageHeight] = useState(150);
 
   useEffect(() => {
     canvasInstance.current = new fabric.Canvas(canvasRef.current);
     canvasInstance.current.setHeight(500);
     canvasInstance.current.setWidth(500);
 
-    canvasInstance.current.on("selection:created", (e) => {
-      setSelectedObject(e.target);
-      setFillColor(e.target.fill || "#000000");
-      setStrokeColor(e.target.stroke || "#000000");
-      if (e.target.type === "i-text") {
-        setTextContent(e.target.text);
-        setBackgroundColor(e.target.backgroundColor || "#ffffff");
-        e.target.enterEditing();
+    const handleSelection = (e) => {
+      const target = e.target;
+      setSelectedObject(target);
+      setFillColor(target.fill || "#000000");
+      setStrokeColor(target.stroke || "#000000");
+      if (target.type === "i-text") {
+        setTextContent(target.text);
+        setBackgroundColor(target.backgroundColor || "#ffffff");
+        target.enterEditing();
+      } else if (target.type === "image") {
+        setImageWidth(target.width || 150);
+        setImageHeight(target.height || 150);
       }
-    });
+    };
 
-    canvasInstance.current.on("selection:updated", (e) => {
-      setSelectedObject(e.target);
-      setFillColor(e.target.fill || "#000000");
-      setStrokeColor(e.target.stroke || "#000000");
-      if (e.target.type === "i-text") {
-        setTextContent(e.target.text);
-        setBackgroundColor(e.target.backgroundColor || "#ffffff");
-        e.target.enterEditing();
-      }
-    });
-
+    canvasInstance.current.on("selection:created", handleSelection);
+    canvasInstance.current.on("selection:updated", handleSelection);
     canvasInstance.current.on("selection:cleared", () => {
       setSelectedObject(null);
       setTextContent("");
       setFillColor("#000000");
       setStrokeColor("#000000");
       setBackgroundColor("#ffffff");
+      setImageWidth(150);
+      setImageHeight(150);
     });
 
     // Clean up on component unmount
@@ -70,6 +69,9 @@ const Canvas = () => {
       height: 100,
       stroke: "black",
       strokeWidth: 1,
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
     });
     canvasInstance.current.add(rect);
   };
@@ -83,6 +85,9 @@ const Canvas = () => {
       fill: "#00ff00",
       stroke: "black",
       strokeWidth: 1,
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
     });
     canvasInstance.current.add(circle);
   };
@@ -94,13 +99,18 @@ const Canvas = () => {
       top,
       fontSize: 20,
       fill: "#000000",
-      backgroundColor: "#f0f0f0", // Add background color to text
+      backgroundColor: "#f0f0f0",
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
+      lockScalingFlip: true, // Prevent flipping during scaling
     });
     canvasInstance.current.add(text);
+    canvasInstance.current.setActiveObject(text); // Ensure the new text is selected and active
   };
 
   const addImage = () => {
-    const { left, top } = getRandomPosition(150, 150);
+    const { left, top } = getRandomPosition(imageWidth, imageHeight);
     fabric.Image.fromURL(
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuxNRKW53yk-7EKjY7bJRb9rQx16XK_5PCPw&s",
       (img) => {
@@ -108,10 +118,14 @@ const Canvas = () => {
           left,
           top,
           angle: 0,
-          width: 150,
-          height: 150,
+          width: imageWidth,
+          height: imageHeight,
+          selectable: true,
+          hasControls: true,
+          hasBorders: true,
         });
         canvasInstance.current.add(img);
+        canvasInstance.current.setActiveObject(img); // Ensure the new image is selected and active
       }
     );
   };
@@ -124,6 +138,9 @@ const Canvas = () => {
       strokeWidth: 2,
       left,
       top,
+      selectable: true,
+      hasControls: true,
+      hasBorders: true,
     });
     canvasInstance.current.add(path);
   };
@@ -158,6 +175,26 @@ const Canvas = () => {
     updateObject(key, color);
   };
 
+  const handleImageWidthChange = (e) => {
+    const width = parseInt(e.target.value, 10);
+    setImageWidth(width);
+    if (selectedObject && selectedObject.type === "image") {
+      selectedObject.set({ width });
+      selectedObject.setCoords();
+      canvasInstance.current.renderAll();
+    }
+  };
+
+  const handleImageHeightChange = (e) => {
+    const height = parseInt(e.target.value, 10);
+    setImageHeight(height);
+    if (selectedObject && selectedObject.type === "image") {
+      selectedObject.set({ height });
+      selectedObject.setCoords();
+      canvasInstance.current.renderAll();
+    }
+  };
+
   const clearCanvas = () => {
     setSavedState(canvasInstance.current.toJSON()); // Save the current state
     canvasInstance.current.clear();
@@ -166,6 +203,8 @@ const Canvas = () => {
     setFillColor("#000000");
     setStrokeColor("#000000");
     setBackgroundColor("#ffffff");
+    setImageWidth(150);
+    setImageHeight(150);
   };
 
   const restoreCanvas = () => {
@@ -179,6 +218,8 @@ const Canvas = () => {
       setFillColor("#000000");
       setStrokeColor("#000000");
       setBackgroundColor("#ffffff");
+      setImageWidth(150);
+      setImageHeight(150);
     }
   };
 
@@ -311,6 +352,33 @@ const Canvas = () => {
                 </label>
               </div>
             )}
+          </div>
+        )}
+        {selectedObject && selectedObject.type === "image" && (
+          <div>
+            <h1>Image Properties</h1>
+            <div>
+              <label style={{ fontSize: 20 }}>
+                Width :
+                <input
+                  type="number"
+                  style={{ fontSize: 20, marginLeft: 5 }}
+                  value={imageWidth}
+                  onChange={handleImageWidthChange}
+                />
+              </label>
+            </div>
+            <div>
+              <label style={{ fontSize: 20 }}>
+                Height :
+                <input
+                  type="number"
+                  style={{ fontSize: 20, marginLeft: 5 }}
+                  value={imageHeight}
+                  onChange={handleImageHeightChange}
+                />
+              </label>
+            </div>
           </div>
         )}
       </div>
