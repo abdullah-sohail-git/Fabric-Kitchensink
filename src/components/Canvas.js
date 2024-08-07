@@ -7,6 +7,7 @@ const Canvas = () => {
   const [selectedObject, setSelectedObject] = useState(null);
   const [textContent, setTextContent] = useState("");
   const [savedState, setSavedState] = useState(null);
+  const [objectCount, setObjectCount] = useState(0); // Single count for all objects
 
   useEffect(() => {
     canvasInstance.current = new fabric.Canvas(canvasRef.current);
@@ -40,10 +41,20 @@ const Canvas = () => {
     };
   }, []);
 
+  const getPosition = () => {
+    const spacing = 20; // Distance between shapes
+    const cols = 5; // Number of objects per row
+    const left = 40 + (objectCount % cols) * (100 + spacing); // Adjusted for horizontal spacing
+    const top = 50 + Math.floor(objectCount / cols) * (100 + spacing); // Adjusted for vertical spacing
+    setObjectCount(objectCount + 1); // Increment count
+    return { left, top };
+  };
+
   const addRectangle = () => {
+    const { left, top } = getPosition();
     const rect = new fabric.Rect({
-      left: 40,
-      top: 50,
+      left,
+      top,
       fill: "#ff0000",
       width: 100,
       height: 100,
@@ -54,9 +65,10 @@ const Canvas = () => {
   };
 
   const addCircle = () => {
+    const { left, top } = getPosition();
     const circle = new fabric.Circle({
-      left: 100,
-      top: 170,
+      left,
+      top,
       radius: 50,
       fill: "#00ff00",
       stroke: "black",
@@ -66,9 +78,10 @@ const Canvas = () => {
   };
 
   const addText = () => {
+    const { left, top } = getPosition();
     const text = new fabric.IText("Editable Text", {
-      left: 80,
-      top: 300,
+      left,
+      top,
       fontSize: 20,
       fill: "#000000",
       backgroundColor: "#f0f0f0", // Add background color to text
@@ -77,12 +90,13 @@ const Canvas = () => {
   };
 
   const addImage = () => {
+    const { left, top } = getPosition();
     fabric.Image.fromURL(
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuxNRKW53yk-7EKjY7bJRb9rQx16XK_5PCPw&s",
       (img) => {
         img.set({
-          left: 250,
-          top: 200,
+          left,
+          top,
           angle: 0,
           width: 150,
           height: 150,
@@ -93,12 +107,13 @@ const Canvas = () => {
   };
 
   const addPath = () => {
+    const { left, top } = getPosition();
     const path = new fabric.Path("M 100 100 L 200 200 L 100 200 Z", {
       fill: "#0000ff",
       stroke: "black",
       strokeWidth: 2,
-      left: 200,
-      top: 50,
+      left,
+      top,
     });
     canvasInstance.current.add(path);
   };
@@ -133,6 +148,7 @@ const Canvas = () => {
     canvasInstance.current.clear();
     setSelectedObject(null);
     setTextContent("");
+    setObjectCount(0); // Reset object count
   };
 
   const restoreCanvas = () => {
